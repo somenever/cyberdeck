@@ -25,12 +25,18 @@ pub struct Configuration {
     stun_or_turn_urls: Vec<String>,
 }
 
+impl Configuration {
+    pub fn new(stun_or_turn_urls: Vec<String>) -> Self {
+        Self { stun_or_turn_urls }
+    }
+}
+
 pub type DataChannel = Arc<RTCDataChannel>;
 
 pub struct Peer {
     pub peer_id: u128,
-    peer_connection: Arc<RTCPeerConnection>,
-    abort: mpsc::UnboundedSender<()>,
+    pub peer_connection: Arc<RTCPeerConnection>,
+    pub abort: mpsc::UnboundedSender<()>,
 }
 
 pub enum PeerEvent {
