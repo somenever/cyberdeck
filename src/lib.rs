@@ -14,7 +14,7 @@ pub use webrtc::data_channel::data_channel_init::RTCDataChannelInit;
 pub use webrtc::data_channel::data_channel_message::DataChannelMessage;
 pub use webrtc::data_channel::data_channel_state::RTCDataChannelState;
 pub use webrtc::data_channel::RTCDataChannel;
-use webrtc::ice_transport::ice_server::RTCIceServer;
+pub use webrtc::ice_transport::ice_server::RTCIceServer;
 use webrtc::interceptor::registry::Registry;
 use webrtc::peer_connection::configuration::RTCConfiguration;
 pub use webrtc::peer_connection::peer_connection_state::RTCPeerConnectionState;
@@ -22,12 +22,12 @@ use webrtc::peer_connection::sdp::session_description::RTCSessionDescription;
 use webrtc::peer_connection::RTCPeerConnection;
 
 pub struct Configuration {
-    stun_or_turn_urls: Vec<String>,
+    ice_servers: Vec<RTCIceServer>,
 }
 
 impl Configuration {
-    pub fn new(stun_or_turn_urls: Vec<String>) -> Self {
-        Self { stun_or_turn_urls }
+    pub fn new(ice_servers: Vec<RTCIceServer>) -> Self {
+        Self { ice_servers }
     }
 }
 
@@ -55,7 +55,10 @@ impl Peer {
         Peer::new_with_configuration(
             handle_message,
             Configuration {
-                stun_or_turn_urls: vec!["stun:stun.l.google.com:19302".to_owned()],
+                ice_servers: vec![RTCIceServer {
+                    urls: vec!["stun:stun.l.google.com:19302".to_owned()],
+                    ..Default::default()
+                }],
             },
         )
         .await
@@ -79,10 +82,7 @@ impl Peer {
             .build();
 
         let config = RTCConfiguration {
-            ice_servers: vec![RTCIceServer {
-                urls: mem::take(&mut config.stun_or_turn_urls),
-                ..Default::default()
-            }],
+            ice_servers: config.ice_servers,
             ..Default::default()
         };
 
