@@ -267,11 +267,11 @@ impl Drop for Peer {
     }
 }
 
-fn encode(b: &str) -> String {
+pub fn encode(b: &str) -> String {
     STANDARD.encode(b)
 }
 
-fn decode(s: &str) -> Result<String> {
+pub fn decode(s: &str) -> Result<String> {
     let b = STANDARD.decode(s)?;
     let s = String::from_utf8(b)?;
     Ok(s)
