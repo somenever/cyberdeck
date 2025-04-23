@@ -23,11 +23,22 @@ use webrtc::peer_connection::RTCPeerConnection;
 
 pub struct Configuration {
     ice_servers: Vec<RTCIceServer>,
+    media_engine: Option<MediaEngine>,
 }
 
 impl Configuration {
     pub fn new(ice_servers: Vec<RTCIceServer>) -> Self {
-        Self { ice_servers }
+        Self {
+            ice_servers,
+            media_engine: None,
+        }
+    }
+
+    pub fn with_media_engine(self, media_engine: MediaEngine) -> Self {
+        Self {
+            media_engine: Some(media_engine),
+            ..self
+        }
     }
 }
 
@@ -59,6 +70,7 @@ impl Peer {
                     urls: vec!["stun:stun.l.google.com:19302".to_owned()],
                     ..Default::default()
                 }],
+                media_engine: None,
             },
         )
         .await
@@ -66,13 +78,19 @@ impl Peer {
 
     pub async fn new_with_configuration<T>(
         handle_message: impl Fn(u128, PeerEvent) -> T + Send + Sync + 'static,
-        mut config: Configuration,
+        config: Configuration,
     ) -> Result<Peer>
     where
         T: Future<Output = ()> + Send + Sync,
     {
-        let mut m = MediaEngine::default();
-        m.register_default_codecs()?;
+        let mut m = match config.media_engine {
+            Some(m) => m,
+            _ => {
+                let mut m = MediaEngine::default();
+                m.register_default_codecs()?;
+                m
+            }
+        };
         let mut registry = Registry::new();
         registry = register_default_interceptors(registry, &mut m)?;
 
