@@ -1,6 +1,6 @@
 [package]
 name = "cyberdeck"
-version = "0.2.5"
+version = "0.2.6"
 edition = "2018"
 description = "A library for easily creating WebRTC data channel connections"
 license = "MIT OR Apache-2.0"
@@ -10,7 +10,7 @@ homepage="https://github.com/richardanaya/cyberdeck"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-webrtc = "0.7"
+webrtc = "0.8"
 tokio = { version = "1", features = ["full"] }
 anyhow = "1.0"
 base64 = "0.21.0"
